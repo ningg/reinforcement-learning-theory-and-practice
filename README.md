@@ -183,7 +183,11 @@ $$
 而对于`最优策略` $\pi^*$，我们得到 **贝尔曼最优方程**：
 
 $$
-Q^*(s,a) = \mathbb{E}\big[R(s,a) + \gamma \max_{a'} Q^*(s',a') \big]
+Q^*(s,a)
+$$
+
+$$
+=  \mathbb{E}\big[R(s,a) + \gamma \max_{a'} Q^*(s',a') \big]
 $$
 
 这就是 `Q-learning` 的理论基础。
