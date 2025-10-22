@@ -1,0 +1,36 @@
+---
+alwaysApply: true
+description: Project structure and organization guidelines for reinforcement learning repository
+---
+
+# Reinforcement Learning Project Structure
+
+This repository is dedicated to learning Reinforcement Learning (RL) theory and practice. Follow this organizational structure:
+
+## Directory Structure
+- `theory/` - Mathematical foundations, algorithms, and theoretical concepts
+- `algorithms/` - Implementation of RL algorithms (Q-learning, Policy Gradient, etc.)
+- `environments/` - Custom environments and environment wrappers
+- `experiments/` - Experiment scripts and result analysis
+- `notebooks/` - Jupyter notebooks for interactive learning and visualization
+- `utils/` - Utility functions and helper modules
+- `tests/` - Unit tests for algorithms and utilities
+- `data/` - Training data, model checkpoints, and experiment results
+- `docs/` - Documentation and learning notes
+
+## File Naming Conventions
+- Use snake_case for Python files
+- Use descriptive names that indicate the algorithm or concept (e.g., `q_learning.py`, `policy_gradient.py`)
+- Notebooks should be prefixed with numbers for ordering (e.g., `01_introduction_to_rl.ipynb`)
+- Configuration files should use `.yaml` or `.json` format
+
+## Import Organization
+- Group imports: standard library, third-party, local imports
+- Use absolute imports when possible
+- Import specific functions/classes rather than entire modules when appropriate
+
+## Code Organization Principles
+- Each algorithm should be in its own module with clear interfaces
+- Separate environment definitions from algorithm implementations
+- Use configuration files for hyperparameters
+- Maintain clear separation between theory and implementation

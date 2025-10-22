@@ -1,0 +1,72 @@
+---
+globs: *.py,*.yaml,*.json
+description: Experiment tracking and reproducibility guidelines for RL research
+---
+
+# Experiment Tracking and Reproducibility
+
+## Configuration Management
+- Use YAML or JSON files for hyperparameter configuration
+- Store configurations in `configs/` directory
+- Include configuration versioning and naming conventions
+- Document parameter ranges and their effects
+
+### Configuration File Structure
+```yaml
+experiment_name: "q_learning_cartpole"
+algorithm: "q_learning"
+environment: "CartPole-v1"
+hyperparameters:
+  learning_rate: 0.1
+  epsilon: 0.1
+  epsilon_decay: 0.995
+  gamma: 0.99
+training:
+  episodes: 1000
+  max_steps_per_episode: 500
+  evaluation_frequency: 100
+```
+
+## Experiment Tracking
+- Log all hyperparameters and random seeds
+- Track training metrics (rewards, losses, convergence)
+- Save model checkpoints at regular intervals
+- Record environment and system information
+- Use consistent naming for experiment directories
+
+## Reproducibility Standards
+- Set random seeds for NumPy, PyTorch/TensorFlow, and Python
+- Document exact package versions in requirements.txt
+- Include environment setup instructions
+- Version control all code and configuration changes
+- Use deterministic algorithms when possible
+
+## Result Analysis
+- Create standardized evaluation scripts
+- Generate learning curves and performance plots
+- Compare multiple random seeds for statistical significance
+- Document failure cases and debugging insights
+- Maintain experiment logs with timestamps
+
+## File Organization
+- Store results in `results/experiment_name/` directories
+- Include subdirectories for: `checkpoints/`, `logs/`, `plots/`, `configs/`
+- Use descriptive filenames with timestamps
+- Archive successful experiments for future reference
+
+## Code Structure for Experiments
+```python
+class ExperimentRunner:
+    def __init__(self, config_path):
+        self.config = self.load_config(config_path)
+        self.setup_logging()
+        self.set_random_seeds()
+    
+    def run_experiment(self):
+        # Training loop with logging
+        pass
+    
+    def evaluate(self):
+        # Evaluation with metrics
+        pass
+```

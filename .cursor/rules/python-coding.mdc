@@ -1,0 +1,48 @@
+---
+globs: *.py
+description: Python coding standards and best practices for RL implementations
+---
+
+# Python Coding Standards for RL
+
+## Code Style and Formatting
+- Follow PEP 8 style guidelines
+- Use type hints for function parameters and return values
+- Maximum line length: 88 characters (Black formatter standard)
+- Use meaningful variable names that reflect RL concepts (state, action, reward, policy, value_function)
+
+## RL-Specific Coding Practices
+
+### Class Structure
+- Create base classes for agents, environments, and algorithms
+- Use abstract base classes (ABC) for defining interfaces
+- Implement `__str__` and `__repr__` methods for debugging
+
+### Function Design
+- Keep functions focused on single responsibilities
+- Use descriptive names: `compute_q_values()`, `update_policy()`, `select_action()`
+- Document mathematical formulas in docstrings using LaTeX notation
+- Include parameter validation and error handling
+
+### Data Handling
+- Use NumPy arrays for numerical computations
+- Prefer PyTorch or TensorFlow tensors for neural network implementations
+- Use proper data types (float32 for neural networks, int64 for discrete actions)
+
+### Performance Considerations
+- Vectorize operations when possible
+- Use appropriate data structures (deques for experience replay)
+- Profile code for bottlenecks in training loops
+- Implement efficient state representation and action spaces
+
+## Documentation Standards
+- Include comprehensive docstrings with examples
+- Document hyperparameters and their typical ranges
+- Explain the mathematical background of algorithms
+- Provide usage examples in docstrings
+
+## Error Handling
+- Validate input dimensions and types
+- Handle edge cases (empty buffers, invalid actions)
+- Provide meaningful error messages
+- Use logging for debugging training processes

@@ -1,0 +1,71 @@
+---
+globs: *.md,*.ipynb,*.py
+description: Mathematical notation and documentation standards for RL concepts
+---
+
+# Mathematical Notation and Documentation
+
+## Mathematical Notation Standards
+
+### Common RL Symbols
+- States: $s \in \mathcal{S}$ or $s_t$ for time step $t$
+- Actions: $a \in \mathcal{A}$ or $a_t$ for time step $t$
+- Rewards: $r \in \mathbb{R}$ or $r_t$ for time step $t$
+- Policy: $\pi(a|s)$ or $\pi_\theta(a|s)$ for parameterized policy
+- Value function: $V^\pi(s)$ for state value, $Q^\pi(s,a)$ for action value
+- Discount factor: $\gamma \in [0,1]$
+- Return: $G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k+1}$
+
+### LaTeX in Documentation
+- Use `$...$` for inline math: The value function $V^\pi(s)$ represents...
+- Use `$$...$$` for display math:
+  ```
+  $$Q^*(s,a) = \max_\pi Q^\pi(s,a)$$
+  ```
+- Use `\mathcal{}` for sets: $\mathcal{S}$, $\mathcal{A}$
+- Use `\mathbb{}` for number sets: $\mathbb{R}$, $\mathbb{N}$
+
+## Documentation Structure
+
+### Algorithm Documentation Template
+```python
+def algorithm_name(self, ...):
+    """
+    Brief description of the algorithm.
+    
+    Mathematical Background:
+    The algorithm implements [formula] where:
+    - [symbol]: description
+    - [symbol]: description
+    
+    Args:
+        param1 (type): Description
+        param2 (type): Description
+        
+    Returns:
+        type: Description
+        
+    Example:
+        >>> agent = AlgorithmName()
+        >>> agent.train(environment)
+    """
+```
+
+### Notebook Structure
+- Start with learning objectives
+- Include mathematical foundations
+- Provide intuitive explanations before implementations
+- Use visualizations to illustrate concepts
+- Include exercises and questions for deeper understanding
+
+## Code Comments
+- Explain the mathematical reasoning behind implementations
+- Reference equations and theorems
+- Clarify non-obvious algorithmic choices
+- Document hyperparameter sensitivity
+
+## Visualization Guidelines
+- Use consistent color schemes for states, actions, and rewards
+- Include legends and axis labels
+- Show learning curves with proper scaling
+- Visualize policy and value function approximations
