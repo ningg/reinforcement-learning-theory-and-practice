@@ -225,15 +225,15 @@ $$
 1. 学一个 **价值函数**（比如  $Q(s,a)$ 或 $V(s)$ ）。
 2. 通过与环境交互、获得奖励，不断更新估计：
 
-   $$
-   Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \max_{a'} Q(s',a') - Q(s,a)]
-   $$
+$$
+Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \max_{a'} Q(s',a') - Q(s,a)]
+$$
 
 3. 选择动作时，就选 $Q$ 值最高的那个动作：
 
-   $$
-   a^* = \arg\max_a Q(s,a)
-   $$
+$$
+a^* = \arg\max_a Q(s,a)
+$$
 
 训练结束的标志：**找到目标价值函数（即 $Q^*$）就意味着找到了最优策略**。
 
