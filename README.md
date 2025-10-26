@@ -7,11 +7,11 @@
 
 1. 简述
 2. 数学抽象
-3. 几类算法
-4. Q-learning
+3. 几类算法：价值函数（Q函数）、梯度策略
+4. Q-learning：Q 函数
+5. DQN：Deep Q-Network，深度 Q 函数网络
 5. Policy Gradient
 6. Actor-Critic
-7. DQN
 8. DDQN
 9. TD3
 10. PPO
@@ -135,7 +135,7 @@ $$
 → 表示：在状态 $s$ 下，按策略 $\pi$ 行动，能期望获得的长期收益。
 
 * $R_t$：此刻的`瞬时快乐`；
-* $\sum_{t=0}^\infty \gamma^t R_t$：一生的`总幸福`，只是未来的快乐会打个折（$\gamma < 1$）。
+* $\sum_{t=0}^\infty \gamma^t R_t$：一生的`总幸福`，只是未来的快乐会打个折（ $\gamma < 1$ ）。
 
 
 所以，在强化学习里我们通常还会定义一个**回报（Return）**：
@@ -159,7 +159,7 @@ $$
 
 → 表示：从状态 $s$ 出发，先做动作 $a$，再按策略 $\pi$ 行动的期望收益。 Q 来源于 Quality 质量/价值。
 
-它们之间关系为：
+它们之间关系为： `状态价值V`，等于 `状态-动作价值Q` 的`加权平均`。
 
 $$
 V^{\pi}(s) = \sum_{a} \pi(a|s) \cdot Q^{\pi}(s,a)
@@ -171,7 +171,13 @@ $$
 这是 `RL` 理论的核心方程。
 
 $$
-Q^{\pi}(s,a) = \mathbb{E}\big[R(s,a) + \gamma \sum_{a'} \pi(a'|s') \cdot Q^{\pi}(s',a') \big]
+Q^{\pi}(s,a) 
+$$
+$$
+= \mathbb{E}\big[R(s,a) + \gamma V_{s'} \big]
+$$
+$$
+= \mathbb{E}\big[R(s,a) + \gamma \sum_{a'} \pi(a'|s') \cdot Q^{\pi}(s',a') \big]
 $$
 
 → 表示`当前动作`价值等于：
@@ -179,6 +185,8 @@ $$
 * 当前的`即时奖励`  $R(s,a)$ ；
 * 加上 `下一状态的价值` 的`折扣期望`， $\gamma$ 为折扣系数
 * 其中： $s'$ 是 $s$ 采取动作 $a$ 后转移到的新状态， $a'$ 是 $s'$ 可能采取的动作。
+
+> **Tips**: **动作价值**（`Q 函数`），包含了 **及时奖励** + **下一个状态价值** (`V 函数`)的折扣期望.
 
 而对于`最优策略` $\pi^*$，我们得到 **贝尔曼最优方程**：
 
@@ -197,8 +205,10 @@ $$
 
 | 类型     | 代表算法       | 思想      | 关键点      | 
 | ---------- | ----------------- | ------------------ | ------------- | 
-| **价值函数**方法  | Q-learning, SARSA | 直接逼近 $Q^*(s,a)$    | 通过 TD（时间差分）更新 | 
-| **策略梯度**方法 | REINFORCE, PPO    | 直接优化 $\pi_\theta(a \| s)$           | 通过`梯度上升`最大化奖励 |
+| **价值函数**方法，Value-based  | Q-learning, SARSA | 直接逼近 $Q^*(s,a)$ ，再决定动作   | 通过 TD（时间差分）更新 | 
+| **策略梯度**方法，Policy-based | REINFORCE, PPO    | 直接优化 $\pi_\theta(a \| s)$ 概率分布    | 通过`梯度上升`最大化奖励 |
+
+
 
 
 
@@ -229,7 +239,7 @@ $$
 Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \max_{a'} Q(s',a') - Q(s,a)]
 $$
 
-3. 选择动作时，就选 $Q$ 值最高的那个动作：
+3. 推理阶段，选择动作时，就选 $Q$ 值最高的那个动作：
 
 $$
 a^* = \arg\max_a Q(s,a)
@@ -238,7 +248,7 @@ $$
 训练结束的标志：**找到目标价值函数（即 $Q^*$）就意味着找到了最优策略**。
 
 
-> 一旦学到了正确的 $Q^*$，在每个状态选 $Q$ 最大的动作，就是最优决策。
+> 一旦学到了正确的 $Q^*$，在每个状态选 $Q$ 最大的动作，就是最优决策、**长期回报最高**。
 
 
 不过要注意两点：
@@ -271,7 +281,7 @@ $$
 
 ### 3.2.策略（Policy-based）
 
-> **核心思想：** 直接学习“如何行动”的`策略函数` $\pi_\theta(a|s)$。
+> **核心思想：** 直接学习“如何行动”的`策略函数` $\pi_\theta(a|s)$ 概率分布.
 
 
 #### 3.2.1.代表算法
@@ -308,6 +318,7 @@ $$
 
 * 收敛慢、方差大；
 * 通常需要配合价值估计（这就引出了 **Actor-Critic**）。
+
 
 
 ### 3.3.混合路线：Actor–Critic
@@ -413,7 +424,7 @@ $$
 > 3. 最终`输出`（模型）就是这张 `Q 表`本身。
 
 
-#### 4.3.1. 输入：不是 Q 表**
+#### 4.3.1. 输入：不是 Q 表
 
 在运行时，算法的每次迭代「输入」其实是**环境交互得到的一个样本**：
 
@@ -431,7 +442,7 @@ $$
 
 #### 4.3.2. Q 表：是“内部存储结构”
 
-Q 表（Q-table）是算法**内部维护的一张表格**，用来记录「每个状态–动作对」的当前价值估计。
+Q 表（Q-table）是算法**内部维护的一张表格**，用来记录「每个状态–动作对」的`当前价值`估计。
 
 比如：
 
@@ -606,7 +617,7 @@ $S2→Right$ 的值也会逐渐逼近 1。
 
 | 状态 | Right | Left |
 | -- | ----- | ---- |
-| S1 | ≈0.4  | 0    |
+| S1 | ≈0.225  | 0    |
 | S2 | ≈1.0  | 0    |
 | S3 | 0     | 0    |
 
@@ -680,6 +691,176 @@ $$
 | ---------- | -------------- | ------------- |
 | Q-learning | 向最优目标 Q 更新 | Off-policy，稳定 |
 | DQN        | 用神经网络逼近 Q  | 能处理高维状态空间 |
+
+
+
+
+
+## 6. REINFORCE 算法：Policy Gradient
+
+REINFORCE 算法，是`策略梯度`类算法的典型实现。不会考虑`价值函数`，直接学 `策略函数` $\pi_\theta(a|s)$ ，即`动作的概率分布`。
+
+
+REINFORCE 通过 `增加`带来`高奖励`的**动作的概率**，来学习策略。
+
+
+数学上，就是：
+
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta} [ \nabla_\theta \log \pi_\theta(a|s) \cdot G_t ]
+$$
+
+其中：
+
+* $J(\theta)$：策略的`总期望奖励`
+* $\pi_\theta(a|s)$：策略（参数化的动作分布）
+* $G_t$：从时间步 t 开始的**累积回报**（discounted sum of rewards）
+
+这个式子叫做 **策略梯度定理**，它说明：
+
+我们应该沿着能“提高带来`高奖励动作`的概率”的方向去更新参数 $\theta$。
+
+
+
+### 6.1.策略梯度定理：数学推导（简化版）
+
+
+定义通用轨迹 $\tau = (s_0, a_0, r_1, s_1, \dots)$ 。
+
+**目标函数**是：从策略 $\pi_\theta$ 生成的整个`轨迹` $\tau$ 的奖励期望 $R(\tau)$ 。
+
+$$
+J(\theta) = \mathbb{E}_{\pi_\theta}[R(\tau)]
+$$
+
+
+为了最大化它，我们求梯度：（这一步章节TODO 中独立推导）
+
+$$
+\nabla_\theta J(\theta)
+= \mathbb{E}_{\pi_\theta} [ R(\tau) \nabla_\theta \log P(\tau|\theta) ]
+$$
+
+ 
+
+然后拆分 $P(\tau|\theta)$（整条轨迹的概率）：复合函数的`链式规则`
+
+$$
+P(\tau|\theta) = \prod_t \pi_\theta(a_t|s_t) P(s_{t+1}|s_t,a_t)
+$$
+
+其中`环境转移概率`不依赖 $\theta$，于是只剩：
+
+$$
+\nabla_\theta J(\theta)
+= \mathbb{E}_{\pi_\theta} [ R(\tau) \sum_t \nabla_\theta \log \pi_\theta(a_t|s_t) ]
+$$
+
+→ 这就是 REINFORCE 更新的来源！
+
+
+1. 初始化参数 θ
+2. **重复**：
+
+   * 采样一条轨迹 $\tau = (s_0, a_0, r_1, s_1, \dots)$
+   * 对每个时间步 $t$：
+
+     * 计算 $G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \dots$
+     * 更新参数：
+       $$
+       \theta \leftarrow \theta + \alpha \cdot G_t \cdot \nabla_\theta \log \pi_\theta(a_t|s_t)
+       $$
+   * （高奖励 → 概率上升；低奖励 → 概率下降）
+
+
+
+### 6.2.策略梯度定理：数学推导（补充）
+
+轨迹 $\tau$ 的期望回报：
+
+$$
+J(\theta) = \mathbb{E}_{\pi_\theta}[R(\tau)]
+$$
+
+
+为了最大化它，我们求梯度：
+
+$$
+\nabla_\theta J(\theta)
+= \mathbb{E}_{\pi_\theta} [ R(\tau) \nabla_\theta \log P(\tau|\theta) ]
+$$
+
+为什么是这个公式？其中的 $\nabla_\theta \log P(\tau|\theta)$ 怎么来的？
+
+这一步其实是整个 REINFORCE 推导中最关键、但也最容易迷惑的地方。我们一点点拆解。
+
+
+#### 6.2.1. 我们从原始目标开始：
+
+$$
+J(\theta) = \mathbb{E}_{\tau \sim P(\tau|\theta)} [R(\tau)]
+$$
+
+也就是「轨迹的期望回报」。
+
+展开期望（连续数值求期望就是积分），就是积分形式：
+
+$$
+J(\theta) = \int P(\tau|\theta) R(\tau) d\tau
+$$
+
+
+#### 6.2.2. 接下来：我们要求它对 $\theta$ 的梯度
+
+直接求导：
+
+$$
+\nabla_\theta J(\theta) = \nabla_\theta \int P(\tau|\theta) R(\tau) d\tau
+$$
+
+$R(\tau)$ 与 $\theta$ 无关，因此梯度只作用在 $P(\tau|\theta)$ 上，只作用在 `环境转移概率` 上：
+
+$$
+= \int \nabla_\theta P(\tau|\theta) R(\tau) d\tau
+$$
+
+
+#### 6.2.3. 接下来是关键技巧：**log-derivative trick**
+
+> 使用log-derivative trick 是一种常用的技巧，用于在不可微分的采样过程中估计梯度。
+
+我们把导数项改写成下面这个形式：
+
+$$
+\nabla_\theta P(\tau|\theta) = P(\tau|\theta) \nabla_\theta \log P(\tau|\theta)
+$$
+
+这是因为对任意正数 $x$，都有 $\nabla x = x \nabla \log x$。
+
+> 简单验证：$\nabla \log x = \frac{1}{x}\nabla x  \implies \nabla x = x \nabla \log x$。
+
+
+#### 6.2.4. 代回去：
+
+$$
+\nabla_\theta J(\theta) = \int P(\tau|\theta) \nabla_\theta \log P(\tau|\theta) R(\tau) d\tau
+$$
+
+然后用积分的概率形式重新写作期望：
+
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim P(\tau|\theta)} [ R(\tau) \cdot \nabla_\theta \log P(\tau|\theta) ]
+$$
+
+---
+
+#### 6.2.5. 总结
+
+“多出来的 $\log P(\tau|\theta)$” 其实不是“凭空出现的”，
+而是从 $\nabla_\theta P(\tau|\theta)$ 用 **log-derivative trick** 转换出来的。
+它的好处是：可以把求导从`概率密度函数`本身（难）变成对 $\log$ `概率的梯度`（容易、数值更稳定）。
+
+
 
 
 
