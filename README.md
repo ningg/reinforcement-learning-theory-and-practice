@@ -734,7 +734,7 @@ J(\theta) = \mathbb{E}_{\pi_\theta}[R(\tau)]
 $$
 
 
-为了最大化它，我们求梯度：（这一步章节TODO 中独立推导）
+为了最大化它，我们求梯度：（*这一步章节 6.2 中独立推导*）
 
 $$
 \nabla_\theta J(\theta)
@@ -766,10 +766,7 @@ $$
    * 对每个时间步 $t$：
 
      * 计算 $G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \dots$
-     * 更新参数：
-       $$
-       \theta \leftarrow \theta + \alpha \cdot G_t \cdot \nabla_\theta \log \pi_\theta(a_t|s_t)
-       $$
+     * 更新参数： $$ \theta \leftarrow \theta + \alpha \cdot G_t \cdot \nabla_\theta \log \pi_\theta(a_t|s_t) $$
    * （高奖励 → 概率上升；低奖励 → 概率下降）
 
 
@@ -837,7 +834,9 @@ $$
 
 这是因为对任意正数 $x$，都有 $\nabla x = x \nabla \log x$。
 
-> 简单验证：$\nabla \log x = \frac{1}{x}\nabla x  \implies \nabla x = x \nabla \log x$。
+> 简单验证： $\nabla \log x = \frac{1}{x}\nabla x  \implies \nabla x = x \nabla \log x$。
+
+
 
 
 #### 6.2.4. 代回去：
@@ -852,7 +851,7 @@ $$
 \nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim P(\tau|\theta)} [ R(\tau) \cdot \nabla_\theta \log P(\tau|\theta) ]
 $$
 
----
+
 
 #### 6.2.5. 总结
 
