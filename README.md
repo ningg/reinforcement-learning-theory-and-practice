@@ -825,15 +825,11 @@ $$
 > 
 > * 如果是 `离散` **随机变量**，期望是**加和**：
 > 
->   $$
->   \mathbb{E}[f(X)] = \sum_x P(X=x), f(x)
->   $$
+>   $\mathbb{E}[f(X)] = \sum_x P(X=x), f(x)$
 > 
 > * 如果是 `连续` **随机变量**，期望是**积分**：
 > 
->   $$
->   \mathbb{E}[f(X)] = \int p(x), f(x), dx
->   $$
+>   $\mathbb{E}[f(X)] = \int p(x), f(x), dx$
 > 
 > 在强化学习中，轨迹 $\tau$（也就是所有状态、动作的序> 列）可以看作一个随机变量。
 > 所以：
@@ -1147,16 +1143,16 @@ $$
 
 **二、没有基线（标准 REINFORCE）**
 
-梯度（对 $p$）的更新是：$\nabla_\theta J = \mathbb{E}\big[\nabla_\theta \log \pi_\theta(a) \cdot R(a)\big]$
+梯度（对 $p$）的更新是： $\nabla_\theta J = \mathbb{E}\big[\nabla_\theta \log \pi_\theta(a) \cdot R(a)\big]$
 
 假设我们直接采样一次（即一次轨迹）：
 
 * 若采到 $a_1$：
-  $\nabla_\theta \log \pi_\theta(a_1) = 1/p$
+  $\nabla_\theta \log \pi_\theta(a_1) = 1/p$ ，
   更新 =  $+10 \times 1/p = +10/p$
 
 * 若采到 $a_2$：
-  $\nabla_\theta \log \pi_\theta(a_2) = -1/(1-p)$
+  $\nabla_\theta \log \pi_\theta(a_2) = -1/(1-p)$ ，
   更新 = $-10 \times -1/(1-p) = +10/(1-p)$
 
 现在注意：
