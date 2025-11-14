@@ -1312,6 +1312,246 @@ $$
 
 
 
+## 7.Actor-Critic
+
+
+
+按**最核心、最自然的路径**来：
+
+**从 REINFORCE → 引入 baseline → 用价值函数当 baseline → Critic 出现 → Actor–Critic 完成闭环。**
+
+我会继续保持“学习模式”：一小步讲解 + 一小步确认。
+
+### 7.1. baseline 的最优选择是 V(s)
+
+ REINFORCE 的梯度：
+
+$$
+\nabla_\theta J
+= \mathbb{E}\Big[\sum_t \nabla_\theta\log\pi(a_t|s_t) \cdot G_t\Big]
+$$
+
+我们引入 baseline $b(s)$：
+
+$$
+\nabla_\theta J
+= \mathbb{E}\Big[\sum_t \nabla_\theta\log\pi(a_t|s_t),(G_t - b(s_t))\Big]
+$$
+
+这个最优 baseline 的数学解就是：
+
+$$
+b^*(s)=V^\pi(s)
+$$
+
+也就是**状态价值函数**，这样方差最小、学习最稳定。
+
+
+### 7.2. 优势函数 A(s,a)
+
+下面进入关键性的一步：
+
+* `REINFORCE（高方差）` → `用 V(s) 当 baseline` → `引出优势 A(s,a)`，
+
+再用优势构成 `Actor–Critic`。
+
+#### 7.2.1. 当 baseline 选择 V(s) 时，会发生什么？
+
+把 baseline 选成：
+
+$$
+b(s)=V(s)
+$$
+
+代入 REINFORCE 梯度：
+
+$$
+\nabla_\theta J
+= \mathbb{E}\Big[\sum_t \nabla_\theta \log\pi(a_t|s_t)(G_t - V(s_t))\Big]
+$$
+
+注意里面出现一个重要的东西：
+
+$$
+G_t - V(s_t)
+$$
+
+这正是：
+
+$$
+A(s_t,a_t) = Q(s_t,a_t) - V(s_t)
+$$
+
+（如果我们用 `Monte Carlo` 的 $G_t$ 来近似 $Q(s,a)$） ??? 为什么可以近似？
+
+**这就是优势函数 Advantage！** 是 Actor–Critic 的关键。
+
+
+#### 7.2.2. 学习 V(s) 状态价值函数
+
+虽然理论上：$V(s)$  是最优 baseline，
+
+但是：**我们并不知道环境的真实 V(s)**。
+
+那怎么办？
+
+> 既然不知道，就用一个可学习的函数来近似它！
+
+也就是： $V_w(s) \approx V^\pi(s)$
+
+这就是 Critic：
+
+* 用参数 $w$
+* 估计一个`状态价值函数` $V_w(s)$
+
+
+#### 7.2.3. 于是策略梯度变成 “Actor 使用 Critic 的估计优势”：
+
+现在的梯度变成：
+
+$$
+\nabla_\theta J
+\approx \mathbb{E}\Big[\sum_t \nabla_\theta \log\pi(a_t|s_t)(G_t - V_w(s_t))\Big]
+$$
+
+* 左边：更新 Actor
+* 右边：需要一个 Critic 去提供 $V_w(s)$
+
+这就是 **Actor–Critic 的基本结构**：
+
+| 角色                | 功能                         |
+| ----------------- | -------------------------- |
+| Actor (policy πθ) | 决定动作、根据 advantage 改变策略     |
+| Critic (value Vw) | 评估`状态价值`，为 Actor 提供 baseline |
+
+
+#### 7.2.4. 用 $G_t$ 有问题（方差仍然大）
+
+此时会发现一个问题：
+
+> 虽然 baseline 减小了方差，但 $G_t$ 还是 Monte Carlo，波动仍然很大。
+
+$G_t$ **完整轨迹结束后** 才能算出来的 return，因此完全是：
+
+* 不 bootstrapping
+* 不依赖价值函数
+* 纯靠采样
+
+所以是 **Monte Carlo（MC）回报**；MC（蒙特卡洛）回报是一次完整 episode 最后的“总账单”。**它只在 episode 结束时才能看到，而且它随机性很强 → 方差非常大 → 学习不稳定。**
+
+所以下一步：**不用 $G_t$，而用 TD 目标来估计 Q 或 A。**
+
+这就进入：
+
+* TD(0) Actor–Critic
+* Advantage Actor–Critic (A2C)
+* 乃至后续 PPO、A3C、TRPO 等
+
+我们重点关注 TD(0) Actor–Critic，其余的找机会再讨论。
+
+Actor-Critic 的核心改进：
+
+* 不再用 MC 回报 $G_t$
+* 改用 **基于价值函数的 Bootstrapping**：
+
+$$
+A_t = r_t + \gamma V(s_{t+1}) - V(s_t) = Q(s_t,a_t) - V(s_t)
+$$
+
+特点：
+
+* 信号来自“下一步价值” → 不是全局噪声
+* 方差瞬间降低到非常小
+
+#### 7.2.5. 小结
+
+我们从 REINFORCE → Actor–Critic 的核心逻辑链，把它写成 5 步：
+
+1. REINFORCE 有高方差
+2. baseline 不改变期望，可以降低方差
+3. 最优 baseline 是 V(s)
+4. 引出 Advantage：A(s,a) = Q(s,a) − V(s)
+5. 我们不知道 V(s)，所以用一个函数 V_w(s) 来学习它 → Critic 出现
+
+
+Actor-Critic 不是“REINFORCE 加一个 baseline”，而是“把策略梯度 + 自举 + 值函数逼近”组合成一个完整框架。
+
+为了确保你完全吃透，我把从 REINFORCE → Actor-Critic 的关键逻辑再总结成三点，让体系更清晰。
+
+
+##### 7.2.5.1. REINFORCE 的两大问题
+
+1. 梯度方差极大（$G_t$ 有巨大噪声）
+2. 必须等待整条轨迹结束（更新慢）
+
+这两个问题本质都来自“使用 $G_t$”。
+
+
+##### 7.2.5.2. 引入 baseline（V(s)）解决了方差问题
+
+如果我们用 V(s) 做 baseline：
+
+$$
+A_t = G_t - V(s_t)
+$$
+
+则 A_t 的方差大幅下降。
+
+
+##### 7.2.5.3. 引入 bootstrapping（TD）解决了更新效率问题
+
+改用 TD 误差：
+
+$$
+\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)
+$$
+
+> Note： 自举（bootstrap）是一种强化学习中的学习方法
+>
+> * 1.通过使用估计值来更新估计值，而不是使用真实值。
+> * 2.不用等到“真实的未来回报”全部出现，而是用我们自己当前学到的估计值来得到答案。
+> * 3.这样可以更快地学习，而且不需要等待完整的轨迹。
+> * 4.简单认为，就是用`自己当前学到的`估计值来得到`答案`。
+
+这样我们：
+
+* 不再需要完整轨迹
+* 能在线更新
+* 学习更稳定、更高效
+* 价值估计和策略梯度协同学习
+
+于是整个算法结构变成：
+
+策略更新：
+
+$$
+\nabla_\theta J \approx \nabla_\theta \log \pi(a_t|s_t),\delta_t
+$$
+
+价值更新：
+
+$$
+V(s_t) \leftarrow V(s_t) + \alpha \delta_t
+$$
+
+这就是真正的 Actor-Critic。
+
+
+Actor-Critic 是“策略梯度 + 自举 + 价值函数逼近”组成的完整体系，已经不是简单替换
+
+两个本质区别：
+
+1. 学习从“完整轨迹” → “逐步在线更新”：
+2. 从“单模型” → “actor 和 critic 双模型协同”：策略学习、状态价值函数学习
+
+因此：Actor-Critic 不是简单的 REINFORCE 增强，而是一个`结构升级`的算法族。
+
+
+
+
+
+
+
 
 
 
