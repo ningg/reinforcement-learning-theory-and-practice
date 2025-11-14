@@ -824,11 +824,13 @@ $$
 > 数学上，「期望」其实就是对随机变量分布的「加权平均」。
 > 
 > * 如果是 `离散` **随机变量**，期望是**加和**：
+> 
 >   $$
 >   \mathbb{E}[f(X)] = \sum_x P(X=x), f(x)
 >   $$
 > 
 > * 如果是 `连续` **随机变量**，期望是**积分**：
+> 
 >   $$
 >   \mathbb{E}[f(X)] = \int p(x), f(x), dx
 >   $$
@@ -981,14 +983,7 @@ $$
 例如 REINFORCE 的常见写法：
 
 $$
-\nabla_{\theta}J(\theta)
-
-=
-\mathbb{E}_{\tau \sim \pi_{\theta}}
-\Big[
-\sum_t
-\nabla_{\theta}\log\pi_{\theta}(a_t|s_t) G_t
-\Big]
+\nabla_{\theta}J(\theta)=\mathbb{E}_{\tau \sim \pi_{\theta}} \Big[\sum_t \nabla_{\theta}\log\pi_{\theta}(a_t|s_t) G_t \Big]
 $$
 
 这里写了 $\sum_t$。
@@ -997,12 +992,7 @@ $$
 但也可以写成：
 
 $$
-\nabla_{\theta}J(\theta)
-=
-\mathbb{E}_{(s_t,a_t)\sim\pi_{\theta}}
-[
-\nabla_{\theta}\log\pi_{\theta}(a_t|s_t) G_t
-]
+\nabla_{\theta}J(\theta)=\mathbb{E}_{(s_t,a_t)\sim\pi_{\theta}}\nabla_{\theta}\log\pi_{\theta}(a_t|s_t) G_t
 $$
 
 这里 **没有写 $\sum_t$**，但含义一样。
@@ -1146,10 +1136,7 @@ $$
 
 * 只有一个状态 $s$。
 * 有两个动作： $a_1$（好动作）和 $a_2$（差动作）。
-* 策略由参数 $\theta$ 控制，定义为：
-  $$
-  \pi_\theta(a_1) = p, \quad \pi_\theta(a_2) = 1 - p.
-  $$
+* 策略由参数 $\theta$ 控制，定义为： $\pi_\theta(a_1) = p, \quad \pi_\theta(a_2) = 1 - p.$
 * 奖励：
 
   * 执行 $a_1$ → $r=+10$
@@ -1160,16 +1147,13 @@ $$
 
 **二、没有基线（标准 REINFORCE）**
 
-梯度（对 $p$）的更新是：
-$$
-\nabla_\theta J = \mathbb{E}\big[\nabla_\theta \log \pi_\theta(a) \cdot R(a)\big]
-$$
+梯度（对 $p$）的更新是：$\nabla_\theta J = \mathbb{E}\big[\nabla_\theta \log \pi_\theta(a) \cdot R(a)\big]$
 
 假设我们直接采样一次（即一次轨迹）：
 
 * 若采到 $a_1$：
   $\nabla_\theta \log \pi_\theta(a_1) = 1/p$
-  更新 =  $ +10 \times 1/p = +10/p $
+  更新 =  $+10 \times 1/p = +10/p$
 
 * 若采到 $a_2$：
   $\nabla_\theta \log \pi_\theta(a_2) = -1/(1-p)$
@@ -1199,8 +1183,8 @@ $$
 
 再看每个动作的“优势值”：
 
-* 对 $a_1$：$R(a_1)-b = 10 - (20p-10) = 20(1-p)$
-* 对 $a_2$：$R(a_2)-b = -10 - (20p-10) = -20p$
+* 对 $a_1$： $R(a_1)-b = 10 - (20p-10) = 20(1-p)$
+* 对 $a_2$： $R(a_2)-b = -10 - (20p-10) = -20p$
 
 现在更新方向变成“比平均好多少”：
 
@@ -1389,7 +1373,7 @@ $$
 
 #### 7.2.2. 学习 V(s) 状态价值函数
 
-虽然理论上：$V(s)$  是最优 baseline，
+虽然理论上： $V(s)$  是最优 baseline，
 
 但是：**我们并不知道环境的真实 V(s)**。
 
@@ -1481,7 +1465,7 @@ Actor-Critic 不是“REINFORCE 加一个 baseline”，而是“把策略梯度
 
 ##### 7.2.5.1. REINFORCE 的两大问题
 
-1. 梯度方差极大（$G_t$ 有巨大噪声）
+1. 梯度方差极大（ $G_t$ 有巨大噪声）
 2. 必须等待整条轨迹结束（更新慢）
 
 这两个问题本质都来自“使用 $G_t$”。
@@ -1522,13 +1506,13 @@ $$
 
 于是整个算法结构变成：
 
-策略更新：
+1.策略更新：
 
 $$
 \nabla_\theta J \approx \nabla_\theta \log \pi(a_t|s_t),\delta_t
 $$
 
-价值更新：
+2.价值更新：
 
 $$
 V(s_t) \leftarrow V(s_t) + \alpha \delta_t
